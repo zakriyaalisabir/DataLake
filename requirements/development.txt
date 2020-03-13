@@ -1,4 +1,7 @@
 pylint
 python-dotenv
-django
 psycopg2
+boto3
+troposphere
+awscli
+django

@@ -1,31 +1,36 @@
-# DLA (Data Lake Accelerator Backend)
-
-## Data Lake
+# Data Lake
 ```
 A data lake is usually a single store of all enterprise data including raw copies of source system data and transformed data used for tasks such as reporting, visualization, advanced analytics and machine learning.
 
-DLA is an accelerated system based on optimised Amazon Web Services which performs ETL jobs. 
+Data Lake is an accelerated system based on optimised Amazon Web Services which performs ETL jobs. 
 ```
 
-## Documentation
+
+## Prerequisites
+If you wish to install Django using the Ubuntu repositories, the process is very straightforward.
+
+First, update your local package index with apt:
 ```
-https://docs.google.com/document/d/1I3g6zoQ5c2p9-mFlPW08IEgv8la7CFQq7B8QBprHZgA/edit
+sudo apt update
+```
+Next, check which version of Python you have installed. 18.04 ships with Python 3.6 by default, which you can verify by typing:
+```
+python3 -V
 ```
 
-## Installation
-
-Use the make tool to enable and setup DLA environment.
-
-```bash
-make all
+Next, install Django:
 ```
+sudo apt install python3-django
+```
+You can test that the installation was successful by typing:
+```
+django-admin --version
+```
+
 
 ## Usage
 
-```python
-import foobar
-
-foobar.pluralize('word') # returns 'words'
-foobar.pluralize('goose') # returns 'geese'
-foobar.singularize('phenomena') # returns 'phenomenon'
+Use the make tool to enable and setup DLA environment.
+```bash
+make all
 ```
