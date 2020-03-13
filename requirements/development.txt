@@ -1,0 +1,4 @@
+pylint
+python-dotenv
+django
+psycopg2
