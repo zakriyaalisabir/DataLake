@@ -1,6 +1,7 @@
+pep8
 pylint
 python-dotenv
-psycopg2
+psycopg2-binary 
 boto3
 troposphere
 awscli

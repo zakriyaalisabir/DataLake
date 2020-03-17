@@ -3,28 +3,46 @@ This module create CloudFormation stack template for s3 bucket
 '''
 
 from troposphere import Output, Ref, Template
-from troposphere.s3 import Bucket, PublicRead
+from troposphere.s3 import Bucket, Private, VersioningConfiguration, AccelerateConfiguration
 
 
 T = Template()
 
 T.set_description(
-    "AWS CloudFormation Sample Template S3_Bucket: Sample template showing "
-    "how to create a publicly accessible S3 bucket. "
-    "**WARNING** This template creates an Amazon S3 Bucket. "
-    "You will be billed for the AWS resources used if you create "
-    "a stack from this template.")
+    "AWS CloudFormation Template that create three s3 buckets 1)Landing Zone. 2)Work Zone\
+    3)Gold Zone.Landing Zone is the place where the raw data is entered in the datalake \
+    while the Work Zone ist the place where a partially transformed or filtered data is \
+    stored and the Gold Zone is the place where the final processesed or transformed data\
+    will be placed after passing through ETL pipeline.")
 
-S3_BUCKET = T.add_resource(Bucket("S3Bucket", AccessControl=PublicRead,))
+BUCKETS = [["LandingZone", "Raw"],
+           ["WorkZone", "Partially Processed"],
+           ["GoldZone", "Final Processed"]]
 
-T.add_output(Output(
-    "BucketName",
-    Value=Ref(S3_BUCKET),
-    Description="Name of S3 bucket to hold website content"
-))
+BUCKET_NAME_SUFFIX = 'DataLakeMockProjectPreBetaRelease'
 
+for bucket, dataType in BUCKETS:
+    S3_BUCKET = T.add_resource(Bucket
+                               (
+                                   bucket+BUCKET_NAME_SUFFIX,
+                                   VersioningConfiguration=VersioningConfiguration(
+                                       Status="Enabled"),
+                                   AccessControl=Private,
+                                   AccelerateConfiguration=AccelerateConfiguration(
+                                       AccelerationStatus="Enabled")
+                               )
+                               )
+
+    T.add_output(Output(
+        bucket,
+        Value=Ref(S3_BUCKET),
+        Description="{0} bucket to hold {1} content of datalake".format(
+            bucket, dataType)
+    ))
+
+# Prints the cf template file to console
 print(T.to_json())
 
-# Finally, write the template to a file
+# Finally, write the template to a yaml file
 with open('src/temp/cf_stack.yaml', 'w') as f:
     f.write(T.to_yaml())
