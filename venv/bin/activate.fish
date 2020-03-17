@@ -29,7 +29,7 @@ end
 # unset irrelevant variables
 deactivate nondestructive
 
-set -gx VIRTUAL_ENV "/home/zakriya/MyDrive/Projects/Mock DataLake/venv"
+set -gx VIRTUAL_ENV "/home/zakriyaalisabir-hp/Desktop/DataLake/venv"
 
 set -gx _OLD_VIRTUAL_PATH $PATH
 set -gx PATH "$VIRTUAL_ENV/bin" $PATH

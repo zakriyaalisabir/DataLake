@@ -48,22 +48,24 @@ cf.push_stack:
 cf:cf.create_stack cf.push_stack
 
 migrate:
-	python	manage.py	migrate
+	python3	manage.py	migrate
 
 migrate.undo_all:
-	python	manage.py	migrate	${APP}	zero
+	python3	manage.py	migrate	${APP}	zero
 
 app.create:
-	python	manage.py	startapp	${APP}
+	python3	manage.py	startapp	${APP}
 
 server.create:
 	django-admin startproject ${SERVER} .
 
 server.run:migrate
-	python	manage.py	runserver
+	python3	manage.py	runserver
 
 run:server.run
 
-bootstrap:clean	init	virtualenv	install	config server.create app.create
+django:server.create app.create#only for creating a django server and django app for REST apis 
 
-all:bootstrap	run	#cf
+bootstrap:clean	init	virtualenv	install	config	cf.create_stack #later it will be cf only
+
+all:bootstrap	run

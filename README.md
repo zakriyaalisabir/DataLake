@@ -17,7 +17,6 @@ Next, check which version of Python you have installed. 18.04 ships with Python 
 ```
 python3 -V
 ```
-
 Next, install Django:
 ```
 sudo apt install python3-django
@@ -25,6 +24,10 @@ sudo apt install python3-django
 You can test that the installation was successful by typing:
 ```
 django-admin --version
+```
+Next, install Python Virtual Env:
+```
+sudo apt install python3-venv
 ```
 
 
