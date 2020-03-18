@@ -2,7 +2,7 @@
 
 SHELL	:=	/bin/bash
 
-APP:=	datalake
+APP:=	datalake_rest_apis
 REVISION:=$(shell	git	rev-parse	--short	HEAD)
 SCHEMA:=	${APP}
 SERVER:=	django_server
@@ -48,6 +48,7 @@ cf.push_stack:
 cf:cf.create_stack cf.push_stack
 
 migrate:
+	python3	manage.py	makemigrations
 	python3	manage.py	migrate
 
 migrate.undo_all:
@@ -62,10 +63,11 @@ server.create:
 server.run:migrate
 	python3	manage.py	runserver
 
-run:server.run
+django.create.su:
+	python3 manage.py createsuperuser
 
 django:server.create app.create#only for creating a django server and django app for REST apis 
 
 bootstrap:clean	init	virtualenv	install	config	cf.create_stack #later it will be cf only
 
-all:bootstrap	run
+all:bootstrap	server.run

@@ -1,3 +1,4 @@
+wheel
 pep8
 pylint
 python-dotenv
@@ -6,3 +7,10 @@ boto3
 troposphere
 awscli
 django
+cryptography
+urllib3
+requests
+django-s3direct
+djangorestframework
+django-filter
+djangorestframework-jsonapi
