@@ -1,5 +1,8 @@
 from django.contrib import admin
-from .models import RawData
+from django.apps import apps
 
-admin.register(RawData)
-admin.site.
+models = apps.get_models()
+
+for model in models:
+    # admin.site.register(model)
+    admin.register(model)

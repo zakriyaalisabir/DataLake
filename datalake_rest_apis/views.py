@@ -1,14 +1,31 @@
-import base64
-import hashlib
-import hmac
-import os
-import time
-from rest_framework import permissions, status, authentication
-from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
 
-from django_server.settings import (
-    AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION, AWS_S3_BUCKETS)
-from .models import FileItem
+from .models import RawDataFile
+from .serializers import RawDataFileSerializer
 
-class
+
+def ParseResponse(res):
+    return res
+
+
+def ResponseBuilder(data, status, error=False):
+    if error:
+        return Response({"error": data}, status=status)
+    return Response({"result": data}, status=status)
+
+
+class DatalakeViews(APIView):
+    def get(self, request):
+        rawdata = RawDataFile.objects.all()
+        serializer = RawDataFileSerializer(rawdata, many=True)
+        return Response({"result": serializer.data}, status=status.HTTP_200_OK)
+
+    def post(self, request):
+        serializer = RawDataFileSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response({"error": serializer.errors},
+                        status=status.HTTP_422_UNPROCESSABLE_ENTITY)

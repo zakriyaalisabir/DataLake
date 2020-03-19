@@ -24,7 +24,7 @@ clean:
 	rm	--force	--recursive	build/
 	rm	--force	--recursive	dist/
 	rm	--force	--recursive	*.egg-info
-	rm	--force	--recursive	src/temp/*
+	rm	--force	--recursive	src_handlers/temp/*
 
 virtualenv.create:
 	python3	-m	venv	$(VIRTUAL_ENV)
@@ -40,10 +40,10 @@ virtualenv.deactivate:
 virtualenv:virtualenv.create	virtualenv.activate
 
 cf.create_stack:
-	python3 src/index.py
+	python3 src_handlers/index.py
 
 cf.push_stack:
-	aws cloudformation create-stack --stack-name learncf-subnet --template-body file://src/temp/cf_stack.yaml
+	aws cloudformation create-stack --stack-name learncf-subnet --template-body file://src_handlers/temp/cf_stack.yaml
 
 cf:cf.create_stack cf.push_stack
 

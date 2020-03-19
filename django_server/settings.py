@@ -30,9 +30,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'datalake_rest_apis.apps.DatalakeRestApisConfig',
     'storages',
-    'rest_framework'
+    'rest_framework',
+    'datalake_rest_apis.apps.DatalakeRestApisConfig',
 ]
 
 MIDDLEWARE = [
