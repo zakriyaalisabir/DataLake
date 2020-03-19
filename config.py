@@ -19,10 +19,18 @@ BUCKET_VERSIONING_CONFIG = VersioningConfiguration(Status="Enabled")
 BUCKET_ACCELERATION_CONFIG = AccelerateConfiguration(
     AccelerationStatus="Enabled")
 
-load_dotenv(find_dotenv())
 
-print('---------------------------------------------')
-print('Loading .env ....')
-print('Using VIRTUAL_ENV = ', os.getenv('VIRTUAL_ENV'))
-print('Successfully loaded .env')
-print('---------------------------------------------')
+def init():
+    load_dotenv(find_dotenv())
+
+
+init()
+
+DEBUG = os.getenv('DEBUG', False)
+
+if not DEBUG:
+    print('---------------------------------------------')
+    print('Loading .env ....')
+    print('Using VIRTUAL_ENV = ', os.getenv('VIRTUAL_ENV'))
+    print('Successfully loaded .env')
+    print('---------------------------------------------')

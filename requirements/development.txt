@@ -1,10 +1,9 @@
 awscli
 boto3
+Collectfast
 django
-django-filter
-django-s3direct
+django-storages
 djangorestframework
-djangorestframework-jsonapi
 pep8
 pylint
 python-dotenv

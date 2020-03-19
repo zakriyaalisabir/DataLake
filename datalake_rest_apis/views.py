@@ -1,6 +1,8 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from django.core.files import File
+
 
 from .models import RawDataFile
 from .serializers import RawDataFileSerializer
@@ -23,6 +25,10 @@ class DatalakeViews(APIView):
         return Response({"result": serializer.data}, status=status.HTTP_200_OK)
 
     def post(self, request):
+        # image_file = request.FILES.getlist('image_file')
+        # image_type = request.POST['image_type']
+        # upload = RawDataFile(request.data)
+        # upload.save()
         serializer = RawDataFileSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()

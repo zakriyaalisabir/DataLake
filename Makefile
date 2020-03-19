@@ -3,6 +3,7 @@
 SHELL	:=	/bin/bash
 
 APP:=	datalake_rest_apis
+CF_STACK_NAME:=	cf-mock-datalake-stack
 REVISION:=$(shell	git	rev-parse	--short	HEAD)
 SCHEMA:=	${APP}
 SERVER:=	django_server
@@ -43,7 +44,8 @@ cf.create_stack:
 	python3 src_handlers/index.py
 
 cf.push_stack:
-	aws cloudformation create-stack --stack-name learncf-subnet --template-body file://src_handlers/temp/cf_stack.yaml
+	aws configure
+	aws cloudformation create-stack --stack-name ${CF_STACK_NAME} --template-body file://src_handlers/temp/cf_stack.yaml
 
 cf:cf.create_stack cf.push_stack
 
@@ -60,7 +62,8 @@ app.create:
 server.create:
 	django-admin startproject ${SERVER} .
 
-server.run:migrate
+server.run:
+	# python3	manage.py	collectstatic
 	python3	manage.py	runserver
 
 django.create.su:
@@ -68,6 +71,6 @@ django.create.su:
 
 django:server.create app.create#only for creating a django server and django app for REST apis 
 
-bootstrap:clean	init	virtualenv	install	config	cf.create_stack #later it will be cf only
+bootstrap:clean	init	virtualenv	install	config
 
 all:bootstrap	server.run

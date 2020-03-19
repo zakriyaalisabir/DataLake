@@ -1,13 +1,27 @@
 '''
 This module create CloudFormation stack template for s3 bucket
 '''
-
-from config import (BUCKET_NAME_SUFFIX, BUCKETS,
-                    BUCKET_CORS_CONFIG, BUCKET_VERSIONING_CONFIG,
-                    BUCKET_ACCELERATION_CONFIG)
+import os
+import sys
+from troposphere.s3 import Bucket, PublicReadWrite
 from troposphere import Output, Ref, Template
-from troposphere.s3 import Bucket, Private
 
+PACKAGE_PARENT = '..'
+SCRIPT_DIR = os.path.dirname(os.path.realpath(
+    os.path.join(os.getcwd(), os.path.expanduser(__file__))))
+sys.path.append(os.path.normpath(os.path.join(SCRIPT_DIR, PACKAGE_PARENT)))
+
+from config import (
+    init,
+    BUCKET_NAME_SUFFIX,
+    BUCKETS,
+    BUCKET_CORS_CONFIG,
+    BUCKET_VERSIONING_CONFIG,
+    BUCKET_ACCELERATION_CONFIG
+)
+
+
+init()
 
 T = Template()
 
@@ -24,8 +38,9 @@ T.set_description(
 for bucket, dataType in BUCKETS:
     S3_BUCKET = T.add_resource(Bucket(
         bucket+BUCKET_NAME_SUFFIX,
+        CorsConfiguration=BUCKET_CORS_CONFIG,
         VersioningConfiguration=BUCKET_VERSIONING_CONFIG,
-        AccessControl=Private,
+        AccessControl=PublicReadWrite,
         AccelerateConfiguration=BUCKET_ACCELERATION_CONFIG)
     )
 
@@ -40,5 +55,5 @@ for bucket, dataType in BUCKETS:
 print(T.to_json())
 
 # Finally, write the template to a yaml file
-with open('src/temp/cf_stack.yaml', 'w') as f:
+with open('src_handlers/temp/cf_stack.yaml', 'w') as f:
     f.write(T.to_yaml())
