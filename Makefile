@@ -41,11 +41,14 @@ virtualenv.deactivate:
 virtualenv:virtualenv.create	virtualenv.activate
 
 cf.create_stack:
-	python3 src_handlers/index.py
+	python3 src_handlers/troposphere/index.py
 
 cf.push_stack:
-	aws configure
-	aws cloudformation create-stack --stack-name ${CF_STACK_NAME} --template-body file://src_handlers/temp/cf_stack.yaml
+	aws	configure
+	aws cloudformation	create-stack	--stack-name	${CF_STACK_NAME}	--template-body	file://src_handlers/temp/cf_stack.yaml
+
+cf.delete_stack:
+	aws	cloudformation	delete-stack	--stack-name	${CF_STACK_NAME}
 
 cf:cf.create_stack cf.push_stack
 
@@ -63,7 +66,6 @@ server.create:
 	django-admin startproject ${SERVER} .
 
 server.run:
-	# python3	manage.py	collectstatic
 	python3	manage.py	runserver
 
 django.create.su:

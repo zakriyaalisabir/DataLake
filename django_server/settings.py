@@ -16,7 +16,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = os.getenv('DJANGO_SERVER_SECRET_KEY', 'django_server_secret')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG', False)
 
 ALLOWED_HOSTS = []
 
@@ -30,7 +30,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'storages', 'collectfast',
     'rest_framework',
     'datalake_rest_apis.apps.DatalakeRestApisConfig',
 ]
@@ -131,12 +130,5 @@ AWS_SECRET_ACCESS_KEY = os.getenv('aws_secret_access_key')
 AWS_REGION = os.getenv('aws_region')
 
 # AWS S3
-STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-# 'cf-mock-datalake-stack-landingzonedatalakemockpro-c7csfr3he90x'
 # BUCKETS[0][0]
-AWS_STORAGE_BUCKET_NAME = 'cf-mock-datalake-stack-landingzonedatalakemockpro-c7csfr3he90x'
-AWS_S3_OBJECT_PARAMETERS = {'CacheControl': 'max-age=86400'}
-AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
-AWS_LOCATION = 'static'
-STATIC_URL = 'https://%s/%s/' % (AWS_S3_CUSTOM_DOMAIN, AWS_LOCATION)
-AWS_DEFAULT_ACL = 'public-read'
+AWS_STORAGE_BUCKET_NAME = 'cf-mock-datalake-stack-landingzonemockdatalake-jflqbnx0hxza'

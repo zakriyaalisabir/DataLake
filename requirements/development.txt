@@ -1,8 +1,7 @@
 awscli
+awacs
 boto3
-Collectfast
 django
-django-storages
 djangorestframework
 pep8
 pylint

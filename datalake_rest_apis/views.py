@@ -1,11 +1,9 @@
-import os
-import base64
 import boto3
+import json
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from django.core.files import File
 from django_server import settings
 
 
@@ -24,34 +22,39 @@ def ResponseBuilder(data, status, error=False):
 
 
 class DatalakeViews(APIView):
+
     def get(self, request):
         rawdata = RawDataFile.objects.all()
         serializer = RawDataFileSerializer(rawdata, many=True)
         return Response({"result": serializer.data}, status=status.HTTP_200_OK)
 
     def post(self, request):
-        filename_req = request.data.get('file')
-        # filename_req = request.POST.get('file')
+        file_obj = request.data.get('file')
 
-        if not filename_req:
+        print(file_obj, '***', str(file_obj.name).split('.')[1])
+
+        if not file_obj:
             return Response({"error": "A filename is required"},
                             status=status.HTTP_400_BAD_REQUEST)
 
-        size = request.POST.get('fileSize')
-        type_ = request.POST.get('fileType')
+        fName, fType = str(file_obj.name).split('.')
 
-        data = {"file_data": filename_req}
+        rawdata = RawDataFile(title=fName, file_type=fType)
+        rawdata.save()
 
-        if filename_req:
-            session = boto3.session.Session(aws_access_key_id=settings.
-                                            AWS_ACCESS_KEY_ID,
-                                            aws_secret_access_key=settings.
-                                            AWS_SECRET_ACCESS_KEY)
-            s3 = session.resource('s3')
-            s3.Bucket(settings.AWS_STORAGE_BUCKET_NAME).put_object(
-                Key=filename_req.name, Body=filename_req)
+        data = {"file_content": file_obj,
+                "obj_data": {
+                    "title": fName,
+                    "file_type": fType
+                }}
 
-            return Response(data, status=status.HTTP_200_OK)
+        session = boto3.session.Session(aws_access_key_id=settings.
+                                        AWS_ACCESS_KEY_ID,
+                                        aws_secret_access_key=settings.
+                                        AWS_SECRET_ACCESS_KEY)
+        s3 = session.resource('s3')
+        s3.Bucket(settings.AWS_STORAGE_BUCKET_NAME).put_object(
+            Key=file_obj.name, Body=file_obj)
 
-        return Response({"error": "Object persistance failed"},
-                        status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+        return Response({"result": data},
+                        status=status.HTTP_200_OK)

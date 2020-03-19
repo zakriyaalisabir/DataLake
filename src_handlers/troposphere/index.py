@@ -1,27 +1,19 @@
+# pylint: skip-file
 '''
 This module create CloudFormation stack template for s3 bucket
 '''
+from troposphere.s3 import Bucket, Private, BucketPolicy
+from troposphere.iam import Policy
+from config import (BUCKETS,
+                    BUCKET_CORS_CONFIG,
+                    BUCKET_NAME_SUFFIX,
+                    BUCKET_VERSIONING_CONFIG)
+from troposphere import Output, Ref, Template
+import awacs.
 import os
 import sys
-from troposphere.s3 import Bucket, PublicReadWrite
-from troposphere import Output, Ref, Template
+sys.path.append(os.path.dirname(os.path.abspath('...')))
 
-PACKAGE_PARENT = '..'
-SCRIPT_DIR = os.path.dirname(os.path.realpath(
-    os.path.join(os.getcwd(), os.path.expanduser(__file__))))
-sys.path.append(os.path.normpath(os.path.join(SCRIPT_DIR, PACKAGE_PARENT)))
-
-from config import (
-    init,
-    BUCKET_NAME_SUFFIX,
-    BUCKETS,
-    BUCKET_CORS_CONFIG,
-    BUCKET_VERSIONING_CONFIG,
-    BUCKET_ACCELERATION_CONFIG
-)
-
-
-init()
 
 T = Template()
 
@@ -40,9 +32,19 @@ for bucket, dataType in BUCKETS:
         bucket+BUCKET_NAME_SUFFIX,
         CorsConfiguration=BUCKET_CORS_CONFIG,
         VersioningConfiguration=BUCKET_VERSIONING_CONFIG,
-        AccessControl=PublicReadWrite,
-        AccelerateConfiguration=BUCKET_ACCELERATION_CONFIG)
-    )
+        AccessControl=Private,
+        # Uncomment below line to add accelerated write
+        # AccelerateConfiguration=BUCKET_ACCELERATION_CONFIG
+
+    ))
+
+    T.add_resource(BucketPolicy(
+        bucket+'Policy', 
+        Bucket=Ref(S3_BUCKET), 
+        PolicyDocument=Policy(
+            Version='20-March-2020',
+            Statement=[Statement()])
+    ))
 
     T.add_output(Output(
         bucket,

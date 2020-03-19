@@ -1,11 +1,12 @@
 import os
 from dotenv import load_dotenv, find_dotenv
 from troposphere.s3 import (VersioningConfiguration,
-                            AccelerateConfiguration, CorsConfiguration,
+                            AccelerateConfiguration,
+                            CorsConfiguration,
                             CorsRules)
 
 
-BUCKET_NAME_SUFFIX = 'DataLakeMockProjectPreBetaRelease'
+BUCKET_NAME_SUFFIX = 'MockDatalake'
 BUCKETS = [["LandingZone", "Raw"],
            ["WorkZone", "Partially Processed"],
            ["GoldZone", "Final Processed"]]
