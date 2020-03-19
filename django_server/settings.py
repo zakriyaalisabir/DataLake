@@ -132,7 +132,9 @@ AWS_REGION = os.getenv('aws_region')
 
 # AWS S3
 STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-AWS_STORAGE_BUCKET_NAME = BUCKETS[0][0]
+# 'cf-mock-datalake-stack-landingzonedatalakemockpro-c7csfr3he90x'
+# BUCKETS[0][0]
+AWS_STORAGE_BUCKET_NAME = 'cf-mock-datalake-stack-landingzonedatalakemockpro-c7csfr3he90x'
 AWS_S3_OBJECT_PARAMETERS = {'CacheControl': 'max-age=86400'}
 AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
 AWS_LOCATION = 'static'
