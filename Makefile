@@ -10,7 +10,7 @@ SERVER:=	django_server
 MODE:=	development
 VIRTUAL_ENV:=	venv
 
-.PHONY:	setup	clean_build	bootstrap
+.PHONY:	init	clean
 
 init:
 	cp	".env.sample"	".env"
