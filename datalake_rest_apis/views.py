@@ -31,16 +31,11 @@ class DatalakeViews(APIView):
     def post(self, request):
         file_obj = request.data.get('file')
 
-        print(file_obj, '***', str(file_obj.name).split('.')[1])
-
         if not file_obj:
             return Response({"error": "A filename is required"},
                             status=status.HTTP_400_BAD_REQUEST)
 
         fName, fType = str(file_obj.name).split('.')
-
-        rawdata = RawDataFile(title=fName, file_type=fType)
-        rawdata.save()
 
         data = {"file_content": file_obj,
                 "obj_data": {
@@ -55,6 +50,9 @@ class DatalakeViews(APIView):
         s3 = session.resource('s3')
         s3.Bucket(settings.AWS_STORAGE_BUCKET_NAME).put_object(
             Key=file_obj.name, Body=file_obj)
+
+        rawdata = RawDataFile(title=fName, file_type=fType)
+        rawdata.save()
 
         return Response({"result": data},
                         status=status.HTTP_200_OK)

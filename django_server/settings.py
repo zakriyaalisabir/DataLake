@@ -130,5 +130,4 @@ AWS_SECRET_ACCESS_KEY = os.getenv('aws_secret_access_key')
 AWS_REGION = os.getenv('aws_region')
 
 # AWS S3
-# BUCKETS[0][0]
-AWS_STORAGE_BUCKET_NAME = 'cf-mock-datalake-stack-landingzonemockdatalake-jflqbnx0hxza'
+AWS_STORAGE_BUCKET_NAME = str(BUCKETS[0][0]+'MockDatalake').lower()
