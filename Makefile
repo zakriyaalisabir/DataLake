@@ -45,7 +45,11 @@ cf.create_stack:
 
 cf.push_stack:
 	aws	configure
-	aws cloudformation	create-stack	--stack-name	${CF_STACK_NAME}	--template-body	file://src_handlers/temp/cf_stack.yaml	--capabilities CAPABILITY_IAM
+	aws cloudformation	create-stack	--stack-name	${CF_STACK_NAME}	--template-body	file://src_handlers/temp/cf_stack.yaml	--capabilities CAPABILITY_NAMED_IAM CAPABILITY_AUTO_EXPAND
+
+cf.update_stack:cf.create_stack
+	aws	configure
+	aws cloudformation	update-stack	--stack-name	${CF_STACK_NAME}	--template-body	file://src_handlers/temp/cf_stack.yaml	--capabilities CAPABILITY_NAMED_IAM CAPABILITY_AUTO_EXPAND
 
 cf.delete_stack:
 	aws	cloudformation	delete-stack	--stack-name	${CF_STACK_NAME}
@@ -72,6 +76,11 @@ django.create.su:
 	python3 manage.py createsuperuser
 
 django:server.create app.create#only for creating a django server and django app for REST apis 
+
+git_sync_dev:
+	git	add	.
+	git	commit	-m	--msg=${MSG}
+	git	push	origin	dev 
 
 bootstrap:clean	init	virtualenv	install	config
 

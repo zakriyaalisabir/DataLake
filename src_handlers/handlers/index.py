@@ -3,7 +3,7 @@ def createEventTrigger(event):
         "statusCode": 200,
         "headers": {},
         "body": json.dumps({
-            "message": "This is the dummy message in a JSON object."
+            "message": "This is the updatad dummy message in a JSON object."
         })
     }
     return response

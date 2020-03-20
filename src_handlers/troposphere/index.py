@@ -5,22 +5,27 @@ This module create CloudFormation stack template for s3 bucket
 import sys
 import os
 sys.path.append(os.path.dirname(os.path.abspath('...')))
-from troposphere.iam import Role, Policy
-from config import (BUCKETS, BUCKET_CORS_CONFIG,
-                    BUCKET_NAME_SUFFIX, BUCKET_VERSIONING_CONFIG)
-from troposphere import (Output, Ref, Template, GetAtt, Parameter,
-                         Join)
-from troposphere.s3 import (Bucket, PublicReadWrite,
-                            BucketPolicy, s3_bucket_name)
+import inspect
+from src_handlers.handlers import index
+from troposphere.constants import NUMBER
 from troposphere.glue import (Crawler, Classifier, CsvClassifier,
                               XMLClassifier, JsonClassifier)
-from troposphere.constants import NUMBER
-from troposphere.awslambda import Function, Code, MEMORY_VALUES
-from src_handlers.handlers import index
-import inspect
+from troposphere.s3 import (Bucket, PublicReadWrite,
+                            BucketPolicy, s3_bucket_name)
+from troposphere.serverless import S3Event, Function
+from troposphere import (Output, Ref, Template, GetAtt, Parameter,
+                         Join)
+from config import (BUCKETS, BUCKET_CORS_CONFIG,
+                    BUCKET_NAME_SUFFIX, BUCKET_VERSIONING_CONFIG)
+from troposphere.iam import Role, Policy
+from troposphere.awslambda import Code, MEMORY_VALUES
+import troposphere.awslambda as tropo_lambda
 
 
 T = Template()
+
+T.add_version('2010-09-09')
+T.add_transform('AWS::Serverless-2016-10-31')
 
 T.set_description(
     "AWS CloudFormation Template that create three s3 buckets \
@@ -46,7 +51,8 @@ Timeout = T.add_parameter(Parameter(
 ))
 
 T.add_resource(Role(
-    "LambdaExecutionRole".lower(),
+    "LambdaExecutionRole",
+    RoleName="LambdaExecutionRole".lower(),
     Path="/",
     Policies=[Policy(
         PolicyName="root",
@@ -77,20 +83,6 @@ T.add_resource(Role(
         ]},
 ))
 
-T.add_resource(
-    Function(
-        'S3CreateEventTrigger'.lower(),
-        Handler='index.createEventTrigger',
-        Runtime='python3.7',
-        MemorySize=Ref(MemorySize),
-        Role=GetAtt("LambdaExecutionRole".lower(), "Arn"),
-        Code=Code(
-            ZipFile=inspect.getsource(index)
-        ),
-        Timeout=Ref(Timeout)
-    )
-)
-
 # T.add_resource(Crawler(
 #     'RawDataCrawler',))
 
@@ -104,15 +96,29 @@ for bucket, dataType in BUCKETS:
         AccessControl=PublicReadWrite,
         # Uncomment below line to add accelerated write
         # AccelerateConfiguration=BUCKET_ACCELERATION_CONFIG
-
     ))
 
-    T.add_output(Output(
-        bucket,
-        Value=Ref(S3_BUCKET),
-        Description="{0} bucket to hold {1} content of datalake".format(
-            bucket, dataType)
-    ))
+    if bucket is BUCKETS[0][0]:
+        pass
+        T.add_resource(Function(
+            'S3CreateEventTrigger',
+            FunctionName='S3CreateEventTrigger'.lower(),
+            Handler='index.createEventTrigger',
+            Runtime='python3.7',
+            MemorySize=Ref(MemorySize),
+            Role=GetAtt("LambdaExecutionRole", "Arn"),
+            # Code=Code(
+            #     ZipFile=inspect.getsource(index)
+            # ),
+            InlineCode=inspect.getsource(index),
+            Timeout=Ref(Timeout),
+            Events={
+                'S3ObjectCreateEvent': S3Event(
+                    'S3ObjectCreateEvent',
+                    Bucket=Ref(S3_BUCKET),
+                    Events=['s3:ObjectCreated:*']
+                )
+            }))
 
 # Prints the cf template file to console
 print(T.to_json())
