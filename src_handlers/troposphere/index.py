@@ -5,18 +5,19 @@ This module create CloudFormation stack template for s3 bucket
 import sys
 import os
 sys.path.append(os.path.dirname(os.path.abspath('...')))
-from troposphere.serverless import S3Event, Function
+from troposphere.iam import Role, Policy
 from config import (BUCKETS, BUCKET_CORS_CONFIG,
                     BUCKET_NAME_SUFFIX, BUCKET_VERSIONING_CONFIG)
-from troposphere import Output, Ref, Template, GetAtt, Parameter
-from awacs.s3 import ARN as S3_ARN
-from awacs.aws import (Statement, Allow, Action, PolicyDocument,
-                       Policy)
+from troposphere import (Output, Ref, Template, GetAtt, Parameter,
+                         Join)
 from troposphere.s3 import (Bucket, PublicReadWrite,
                             BucketPolicy, s3_bucket_name)
 from troposphere.glue import (Crawler, Classifier, CsvClassifier,
                               XMLClassifier, JsonClassifier)
-# from troposphere.awslambda import Function
+from troposphere.constants import NUMBER
+from troposphere.awslambda import Function, Code, MEMORY_VALUES
+from src_handlers.handlers import index
+import inspect
 
 
 T = Template()
@@ -30,6 +31,69 @@ T.set_description(
     is the place where the final processesed or transformed data\
     will be placed after passing through ETL pipeline.")
 
+MemorySize = T.add_parameter(Parameter(
+    'LambdaMemorySize',
+    Type=NUMBER,
+    Description='Amount of memory to allocate to the Lambda Function',
+    Default='128',
+))
+
+Timeout = T.add_parameter(Parameter(
+    'LambdaTimeout',
+    Type=NUMBER,
+    Description='Timeout in seconds for the Lambda function',
+    Default='60'
+))
+
+T.add_resource(Role(
+    "LambdaExecutionRole".lower(),
+    Path="/",
+    Policies=[Policy(
+        PolicyName="root",
+        PolicyDocument={
+            "Version": "2012-10-17",
+            "Statement": [{
+                "Action": ["logs:*"],
+                "Resource": "arn:aws:logs:*:*:*",
+                "Effect": "Allow"
+            }, {
+                "Action": ["lambda:*"],
+                "Resource": "*",
+                "Effect": "Allow"
+            }]
+        })],
+    AssumeRolePolicyDocument={
+        "Version": "2012-10-17",
+        "Statement": [
+            {
+                "Action": ["sts:AssumeRole"],
+                "Effect": "Allow",
+                "Principal": {
+                    "Service": [
+                        "lambda.amazonaws.com"
+                    ]
+                }
+            }
+        ]},
+))
+
+T.add_resource(
+    Function(
+        'S3CreateEventTrigger'.lower(),
+        Handler='index.createEventTrigger',
+        Runtime='python3.7',
+        MemorySize=Ref(MemorySize),
+        Role=GetAtt("LambdaExecutionRole".lower(), "Arn"),
+        Code=Code(
+            ZipFile=inspect.getsource(index)
+        ),
+        Timeout=Ref(Timeout)
+    )
+)
+
+# T.add_resource(Crawler(
+#     'RawDataCrawler',))
+
 
 for bucket, dataType in BUCKETS:
     S3_BUCKET = T.add_resource(Bucket(
@@ -42,25 +106,6 @@ for bucket, dataType in BUCKETS:
         # AccelerateConfiguration=BUCKET_ACCELERATION_CONFIG
 
     ))
-
-    if bucket is BUCKETS[0][0]:
-        T.add_resource(Function(
-            'S3CreateEventTrigger',
-            MemorySize=128,
-            Timeout='60',
-            Handler='index.createEventTrigger',
-            Runtime='python3.7',
-            CodeUri='s3://'+str(bucket+BUCKET_NAME_SUFFIX).lower()+'/cet.zip',
-            Policies='AmazonS3ReadOnlyAccess',
-            Events={
-                'FileUpload': S3Event(
-                    'FileUpload',
-                    Bucket=Ref(S3_BUCKET),
-                    Events=['s3:ObjectCreated:*']
-                )}))
-
-        # T.add_resource(Crawler(
-        #     'RawDataCrawler',))
 
     T.add_output(Output(
         bucket,

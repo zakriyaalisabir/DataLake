@@ -45,7 +45,7 @@ cf.create_stack:
 
 cf.push_stack:
 	aws	configure
-	aws cloudformation	create-stack	--stack-name	${CF_STACK_NAME}	--template-body	file://src_handlers/temp/cf_stack.yaml
+	aws cloudformation	create-stack	--stack-name	${CF_STACK_NAME}	--template-body	file://src_handlers/temp/cf_stack.yaml	--capabilities CAPABILITY_IAM
 
 cf.delete_stack:
 	aws	cloudformation	delete-stack	--stack-name	${CF_STACK_NAME}
