@@ -79,7 +79,7 @@ django:server.create app.create#only for creating a django server and django app
 
 git_sync_dev:
 	git	add	.
-	git	commit	-m	--msg=${MSG}
+	git	commit	-m	"${MSG}"
 	git	push	origin	dev 
 
 bootstrap:clean	init	virtualenv	install	config
