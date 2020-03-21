@@ -5,27 +5,31 @@ This module create CloudFormation stack template for s3 bucket
 import sys
 import os
 sys.path.append(os.path.dirname(os.path.abspath('...')))
-import inspect
-from src_handlers.handlers import index
-from troposphere.constants import NUMBER
-from troposphere.glue import (Crawler, Classifier, CsvClassifier,
-                              XMLClassifier, JsonClassifier)
-from troposphere.s3 import (Bucket, PublicReadWrite,
-                            BucketPolicy, s3_bucket_name)
-from troposphere.serverless import S3Event, Function
-from troposphere import (Output, Ref, Template, GetAtt, Parameter,
-                         Join)
+import troposphere.awslambda as tropo_lambda
+from troposphere.awslambda import Code, MEMORY_VALUES
+from troposphere.iam import Role, Policy
 from config import (BUCKETS, BUCKET_CORS_CONFIG,
                     BUCKET_NAME_SUFFIX, BUCKET_VERSIONING_CONFIG)
-from troposphere.iam import Role, Policy
-from troposphere.awslambda import Code, MEMORY_VALUES
-import troposphere.awslambda as tropo_lambda
+from troposphere import (Output, Ref, Template, GetAtt, Parameter,
+                         Join)
+from troposphere.serverless import S3Event, Function
+from troposphere.s3 import (Bucket, PublicReadWrite,
+                            BucketPolicy, s3_bucket_name)
+from troposphere.glue import (Crawler, Classifier, CsvClassifier,
+                              XMLClassifier, JsonClassifier,
+                              SchemaChangePolicy, Database, Table,
+                              CatalogTarget, Targets, Database,
+                              S3Target)
+from troposphere.constants import NUMBER
+from src_handlers.handlers import index
+import inspect
+import json
 
 
 T = Template()
 
-T.add_version('2010-09-09')
-T.add_transform('AWS::Serverless-2016-10-31')
+T.set_version('2010-09-09')
+T.set_transform('AWS::Serverless-2016-10-31')
 
 T.set_description(
     "AWS CloudFormation Template that create three s3 buckets \
@@ -63,7 +67,7 @@ T.add_resource(Role(
                 "Resource": "arn:aws:logs:*:*:*",
                 "Effect": "Allow"
             }, {
-                "Action": ["lambda:*"],
+                "Action": ["lambda:*", "glue:*", "s3:*"],
                 "Resource": "*",
                 "Effect": "Allow"
             }]
@@ -76,15 +80,13 @@ T.add_resource(Role(
                 "Effect": "Allow",
                 "Principal": {
                     "Service": [
-                        "lambda.amazonaws.com"
+                        "lambda.amazonaws.com",
+                        "glue.amazonaws.com"
                     ]
                 }
             }
         ]},
 ))
-
-# T.add_resource(Crawler(
-#     'RawDataCrawler',))
 
 
 for bucket, dataType in BUCKETS:
@@ -107,9 +109,6 @@ for bucket, dataType in BUCKETS:
             Runtime='python3.7',
             MemorySize=Ref(MemorySize),
             Role=GetAtt("LambdaExecutionRole", "Arn"),
-            # Code=Code(
-            #     ZipFile=inspect.getsource(index)
-            # ),
             InlineCode=inspect.getsource(index),
             Timeout=Ref(Timeout),
             Events={
@@ -118,7 +117,40 @@ for bucket, dataType in BUCKETS:
                     Bucket=Ref(S3_BUCKET),
                     Events=['s3:ObjectCreated:*']
                 )
-            }))
+            })
+        )
+
+        T.add_resource(
+            Crawler(
+                'RawDataCrawler',
+                Name='RawDataCrawler'.lower(),
+                Role=GetAtt("LambdaExecutionRole", "Arn"),
+                DatabaseName='RawDataCrawlerDB'.lower(),
+                TablePrefix='MockDatalakeTable'.lower(),
+                SchemaChangePolicy=SchemaChangePolicy(
+                    UpdateBehavior="UPDATE_IN_DATABASE",
+                    DeleteBehavior="LOG"
+                ),
+                Configuration=json.dumps({
+                    "Version": 1.0,
+                    "CrawlerOutput": {
+                        "Partitions": {
+                            "AddOrUpdateBehavior": "InheritFromTable"
+                        },
+                        "Tables": {
+                            "AddOrUpdateBehavior": "MergeNewColumns"
+                        }
+                    }
+                }),
+                Targets=Targets(
+                    'MyS3Targets',
+                    S3Targets=[S3Target(
+                        'MyS3RawDataTarget',
+                        Path='s3://'+(bucket+BUCKET_NAME_SUFFIX).lower()+'/*/*'
+                    )]
+                )
+            )
+        )
 
 # Prints the cf template file to console
 print(T.to_json())
