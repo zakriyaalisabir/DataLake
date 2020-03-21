@@ -9,6 +9,7 @@ SCHEMA:=	${APP}
 SERVER:=	django_server
 MODE:=	development
 VIRTUAL_ENV:=	venv
+MSG:=	updated code
 
 .PHONY:	init	clean
 

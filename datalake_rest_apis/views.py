@@ -57,7 +57,7 @@ class DatalakeViews(APIView):
                                         AWS_SECRET_ACCESS_KEY)
         s3 = session.resource('s3')
         s3.Bucket(settings.AWS_STORAGE_BUCKET_NAME).put_object(
-            Key=fType+'/'+str(calendar.timegm(time.gmtime()))+'.'+fType,
+            Key=fType+'/file'+'.'+fType,
             Body=file_obj)
 
         # rawdata = RawDataFile(title=fName, file_type=fType)

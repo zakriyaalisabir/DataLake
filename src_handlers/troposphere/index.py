@@ -126,7 +126,7 @@ for bucket, dataType in BUCKETS:
                 Name='RawDataCrawler'.lower(),
                 Role=GetAtt("LambdaExecutionRole", "Arn"),
                 DatabaseName='RawDataCrawlerDB'.lower(),
-                TablePrefix='MockDatalakeTable'.lower(),
+                TablePrefix='MockDatalakeTable_'.lower(),
                 SchemaChangePolicy=SchemaChangePolicy(
                     UpdateBehavior="UPDATE_IN_DATABASE",
                     DeleteBehavior="LOG"
