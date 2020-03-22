@@ -79,6 +79,7 @@ django.create.su:
 django:server.create app.create#only for creating a django server and django app for REST apis 
 
 git_sync_dev:
+	git	fetch --all
 	git	add	.
 	git	commit	-m	"${MSG}"
 	git	push	origin	dev 
