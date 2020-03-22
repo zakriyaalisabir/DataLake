@@ -1,5 +1,7 @@
+wheel
 awscli
 awacs
+awsebcli
 boto3
 django
 djangorestframework
@@ -8,4 +10,3 @@ pylint
 python-dotenv
 psycopg2-binary 
 troposphere
-wheel
