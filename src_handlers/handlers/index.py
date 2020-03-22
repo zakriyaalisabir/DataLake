@@ -2,7 +2,6 @@ from __future__ import print_function
 import os
 import json
 import boto3
-# from django_server.settings import (AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY)
 
 
 session = boto3.session.Session(
@@ -11,7 +10,6 @@ session = boto3.session.Session(
 )
 
 s3 = session.resource('s3')
-# glue = session.resource("glue")
 glue_client = boto3.client('glue', region_name=os.getenv('aws_region'))
 
 

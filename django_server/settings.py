@@ -18,7 +18,7 @@ SECRET_KEY = os.getenv('DJANGO_SERVER_SECRET_KEY', 'django_server_secret')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', False)
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['datalake-django-env.eba-gxezcx3u.ap-southeast-1.elasticbeanstalk.com']
 
 
 # Application definition
@@ -109,13 +109,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/3.0/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'UTC'
-
 USE_I18N = True
-
 USE_L10N = True
-
 USE_TZ = True
 
 
@@ -123,6 +119,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = 'static'
+
 
 # AWS configs
 AWS_ACCESS_KEY_ID = os.getenv('aws_access_key_id')
