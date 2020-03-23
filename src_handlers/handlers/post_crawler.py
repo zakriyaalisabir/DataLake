@@ -13,7 +13,7 @@ glue_client = boto3.client('glue', region_name=os.getenv('aws_region'))
 
 
 def initiateGlueJob(event, context):
-    # TODO : Start Glue Job below
+    # TODO : Start Glue Job below 
     try:
         if event and 'detail' in event and event['detail'] and 'crawlerName' in event['detail']:
             c_name = event['detail']['crawlerName']

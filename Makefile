@@ -82,6 +82,7 @@ django:server.create app.create#only for creating a django server and django app
 
 git_sync_dev:
 	git	fetch --all
+	git	pull	origin ${ORIGIN}
 	git	add	.
 	git	commit	-m	"${MSG}"
 	git	push	origin	${ORIGIN} 
