@@ -20,6 +20,7 @@ from config import (BUCKETS, BUCKET_CORS_CONFIG,
                     BUCKET_NAME_SUFFIX, BUCKET_VERSIONING_CONFIG)
 from troposphere.iam import Role, Policy
 from troposphere.awslambda import Code, MEMORY_VALUES
+from troposphere.events import Rule, Target
 import troposphere.awslambda as tropo_lambda
 import sys
 import os
@@ -59,6 +60,24 @@ Timeout = T.add_parameter(Parameter(
     Type=NUMBER,
     Description='Timeout in seconds for the Lambda function',
     Default='60'
+))
+
+Rule = T.add_resource(Rule(
+    'PostCrawlerRuleForETL',
+    Name='PostCrawlerRuleForETL'.lower(),
+    EventPattern={
+        "source": ["aws.glue"],
+        "detail-type": ["Glue Crawler State Change"],
+        "detail": {
+            "state": [
+                "Succeeded"
+            ]
+        }
+    },
+    Description="Foobar CloudWatch Event",
+    State="ENABLED",
+    Targets=[foobar_target]
+
 ))
 
 T.add_resource(Role(
@@ -108,7 +127,6 @@ for bucket, dataType in BUCKETS:
     ))
 
     if bucket is BUCKETS[0][0]:
-        pass
         T.add_resource(Function(
             'S3CreateEventTrigger',
             FunctionName='S3CreateEventTrigger'.lower(),
@@ -171,6 +189,21 @@ for bucket, dataType in BUCKETS:
                 )
             )
         )
+
+    if bucket is BUCKETS[1][0]:
+        T.add_resource(
+            Function(
+                'PostCrawlerFnForGlueJob',
+                FunctionName='PostCrawlerFnForGlueJob'.lower(),
+                Handler='post_crawler.InitiateGlueJob',
+                Runtime='python3.7',
+                MemorySize=Ref(MemorySize),
+                Role=GetAtt("LambdaExecutionRole", "Arn"),
+                InlineCode=inspect.getsource(index),
+                Timeout=Ref(Timeout),
+            )
+        )
+
 
 # Prints the cf template file to console
 print(T.to_json())
