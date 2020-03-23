@@ -1,7 +1,10 @@
-# pylint: skip-file
+# pylint: disable=W,C,R
 '''
 This module create CloudFormation stack template for s3 bucket
 '''
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.abspath('...')))
 import troposphere.awslambda as tropo_lambda
 from troposphere.awslambda import Code, MEMORY_VALUES
 from troposphere.iam import Role, Policy
@@ -21,9 +24,6 @@ from troposphere.constants import NUMBER
 from src_handlers.handlers import index
 import inspect
 import json
-import sys
-import os
-sys.path.append(os.path.dirname(os.path.abspath('...')))
 
 
 T = Template()
@@ -144,10 +144,23 @@ for bucket, dataType in BUCKETS:
                 }),
                 Targets=Targets(
                     'MyS3Targets',
-                    S3Targets=[S3Target(
-                        'MyS3RawDataTarget',
-                        Path='s3://'+(bucket+BUCKET_NAME_SUFFIX).lower()+'/*/*'
-                    )]
+                    S3Targets=[
+                        S3Target(
+                            'MyS3RawDataTarget',
+                            Path='s3://' +
+                            (bucket+BUCKET_NAME_SUFFIX).lower()+'/json/file.json'
+                        ),
+                        S3Target(
+                            'MyS3RawDataTarget',
+                            Path='s3://' +
+                            (bucket+BUCKET_NAME_SUFFIX).lower()+'/csv/file.csv'
+                        ),
+                        S3Target(
+                            'MyS3RawDataTarget',
+                            Path='s3://' +
+                            (bucket+BUCKET_NAME_SUFFIX).lower()+'/xml/file.xml'
+                        )
+                    ]
                 )
             )
         )

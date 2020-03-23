@@ -14,6 +14,7 @@ MSG:=	updated code
 .PHONY:	init	clean
 
 init:
+	mkdir	src_handlers/temp
 	cp	".env.sample"	".env"
 
 install:
