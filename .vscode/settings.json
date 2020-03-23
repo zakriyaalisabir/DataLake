@@ -1,8 +1,5 @@
 {
     "python.pythonPath": "venv/bin/python",
-    "editor.formatOnType": true,
-    "editor.formatOnPaste": true,
-    "editor.formatOnSave": true,
     "python.autoComplete.addBrackets": true,
     "python.linting.enabled": true,
     "python.linting.pycodestyleEnabled": false,

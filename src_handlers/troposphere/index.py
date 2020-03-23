@@ -2,9 +2,12 @@
 '''
 This module create CloudFormation stack template for s3 bucket
 '''
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.abspath('...')))
 import json
 import inspect
-from src_handlers.handlers import index
+from src_handlers.handlers import index, post_crawler
 from troposphere.constants import NUMBER
 from troposphere.glue import (Crawler, Classifier, CsvClassifier,
                               XMLClassifier, JsonClassifier,
@@ -22,9 +25,6 @@ from troposphere.iam import Role, Policy
 from troposphere.awslambda import Code, MEMORY_VALUES
 from troposphere.events import Rule, Target
 import troposphere.awslambda as tropo_lambda
-import sys
-import os
-sys.path.append(os.path.dirname(os.path.abspath('...')))
 
 
 CRAWLER_DB_NAME = 'RawDataCrawlerDB'.lower()
@@ -62,23 +62,6 @@ Timeout = T.add_parameter(Parameter(
     Default='60'
 ))
 
-Rule = T.add_resource(Rule(
-    'PostCrawlerRuleForETL',
-    Name='PostCrawlerRuleForETL'.lower(),
-    EventPattern={
-        "source": ["aws.glue"],
-        "detail-type": ["Glue Crawler State Change"],
-        "detail": {
-            "state": [
-                "Succeeded"
-            ]
-        }
-    },
-    Description="Foobar CloudWatch Event",
-    State="ENABLED",
-    Targets=[foobar_target]
-
-))
 
 T.add_resource(Role(
     "LambdaExecutionRole",
@@ -191,7 +174,7 @@ for bucket, dataType in BUCKETS:
         )
 
     if bucket is BUCKETS[1][0]:
-        T.add_resource(
+        PostCrawlerFnForGlueJob = T.add_resource(
             Function(
                 'PostCrawlerFnForGlueJob',
                 FunctionName='PostCrawlerFnForGlueJob'.lower(),
@@ -199,10 +182,33 @@ for bucket, dataType in BUCKETS:
                 Runtime='python3.7',
                 MemorySize=Ref(MemorySize),
                 Role=GetAtt("LambdaExecutionRole", "Arn"),
-                InlineCode=inspect.getsource(index),
+                InlineCode=inspect.getsource(post_crawler),
                 Timeout=Ref(Timeout),
             )
         )
+
+        Rule = T.add_resource(Rule(
+            'PostCrawlerRuleForETL',
+            Name='PostCrawlerRuleForETL'.lower(),
+            EventPattern={
+                "source": ["aws.glue"],
+                "detail-type": ["Glue Crawler State Change"],
+                "detail": {
+                    "state": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            Description="Foobar CloudWatch Event",
+            State="ENABLED",
+            Targets=[
+                Join("", {
+                    "Arn": GetAtt(Ref(PostCrawlerFnForGlueJob), "Arn"),
+                    "Id": "PostCrawlerTargetFunction1"
+                })
+            ]
+
+        ))
 
 
 # Prints the cf template file to console
