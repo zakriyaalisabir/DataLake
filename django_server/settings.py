@@ -18,7 +18,10 @@ SECRET_KEY = os.getenv('DJANGO_SERVER_SECRET_KEY', 'django_server_secret')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', False)
 
-ALLOWED_HOSTS = ['datalake-django-env.eba-gxezcx3u.ap-southeast-1.elasticbeanstalk.com']
+ALLOWED_HOSTS = [
+    'localhost',
+    'datalake-django-env.eba-gxezcx3u.ap-southeast-1.elasticbeanstalk.com'
+]
 
 
 # Application definition

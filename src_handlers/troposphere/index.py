@@ -2,28 +2,35 @@
 '''
 This module create CloudFormation stack template for s3 bucket
 '''
-import sys
-import os
-sys.path.append(os.path.dirname(os.path.abspath('...')))
-import troposphere.awslambda as tropo_lambda
-from troposphere.awslambda import Code, MEMORY_VALUES
-from troposphere.iam import Role, Policy
-from config import (BUCKETS, BUCKET_CORS_CONFIG,
-                    BUCKET_NAME_SUFFIX, BUCKET_VERSIONING_CONFIG)
-from troposphere import (Output, Ref, Template, GetAtt, Parameter,
-                         Join)
-from troposphere.serverless import S3Event, Function
-from troposphere.s3 import (Bucket, PublicReadWrite,
-                            BucketPolicy, s3_bucket_name)
+import json
+import inspect
+from src_handlers.handlers import index
+from troposphere.constants import NUMBER
 from troposphere.glue import (Crawler, Classifier, CsvClassifier,
                               XMLClassifier, JsonClassifier,
                               SchemaChangePolicy, Database, Table,
                               CatalogTarget, Targets, Database,
                               S3Target)
-from troposphere.constants import NUMBER
-from src_handlers.handlers import index
-import inspect
-import json
+from troposphere.s3 import (Bucket, PublicReadWrite,
+                            BucketPolicy, s3_bucket_name)
+from troposphere.serverless import S3Event, Function
+from troposphere import (Output, Ref, Template, GetAtt, Parameter,
+                         Join)
+from config import (BUCKETS, BUCKET_CORS_CONFIG,
+                    BUCKET_NAME_SUFFIX, BUCKET_VERSIONING_CONFIG)
+from troposphere.iam import Role, Policy
+from troposphere.awslambda import Code, MEMORY_VALUES
+import troposphere.awslambda as tropo_lambda
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.abspath('...')))
+
+
+CRAWLER_DB_NAME = 'RawDataCrawlerDB'.lower()
+CRAWLER_TABLES_NAME_PREFIX = 'MockDatalakeTable_'.lower()
+
+
+def CRAWLER_NAME(nameStr): return (nameStr+'DataCrawler').lower()
 
 
 T = Template()
@@ -122,11 +129,11 @@ for bucket, dataType in BUCKETS:
 
         T.add_resource(
             Crawler(
-                'RawDataCrawler',
-                Name='RawDataCrawler'.lower(),
+                CRAWLER_NAME(bucket),
+                Name=CRAWLER_NAME(bucket),
                 Role=GetAtt("LambdaExecutionRole", "Arn"),
-                DatabaseName='RawDataCrawlerDB'.lower(),
-                TablePrefix='MockDatalakeTable_'.lower(),
+                DatabaseName=CRAWLER_DB_NAME,
+                TablePrefix=CRAWLER_TABLES_NAME_PREFIX,
                 SchemaChangePolicy=SchemaChangePolicy(
                     UpdateBehavior="UPDATE_IN_DATABASE",
                     DeleteBehavior="LOG"
