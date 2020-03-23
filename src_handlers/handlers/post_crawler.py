@@ -20,7 +20,7 @@ def initiateGlueJob(event, context):
             print('Received crawler_name from event -{0}'.format(str(c_name)))
 
             crawler = glue_client.get_crawler(Name=c_name)
-            print('Received crawler from glue - {0}'.format(str(crawler)))
+            print('Received crawlerObj from glue')
 
             database = crawler['Crawler']['DatabaseName']
             print('Received db from crawler - {0}'.format(str(database)))
