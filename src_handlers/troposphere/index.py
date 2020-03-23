@@ -29,9 +29,7 @@ import troposphere.awslambda as tropo_lambda
 
 CRAWLER_DB_NAME = 'RawDataCrawlerDB'.lower()
 CRAWLER_TABLES_NAME_PREFIX = 'MockDatalakeTable_'.lower()
-
-
-def CRAWLER_NAME(nameStr): return (nameStr+'DataCrawler').lower()
+CRAWLER_NAME = 'RawDataCrawler'.lower()
 
 
 T = Template()
@@ -130,8 +128,8 @@ for bucket, dataType in BUCKETS:
 
         T.add_resource(
             Crawler(
-                CRAWLER_NAME(bucket),
-                Name=CRAWLER_NAME(bucket),
+                CRAWLER_NAME,
+                Name=CRAWLER_NAME,
                 Role=GetAtt("LambdaExecutionRole", "Arn"),
                 DatabaseName=CRAWLER_DB_NAME,
                 TablePrefix=CRAWLER_TABLES_NAME_PREFIX,
@@ -202,12 +200,12 @@ for bucket, dataType in BUCKETS:
             Description="Post Crawler Rule for CloudWatch Event",
             State="ENABLED",
             Targets=[
-                {
-                    "Arn": GetAtt(Ref(PostCrawlerFnForGlueJob), "Arn"),
-                    "Id": "PostCrawlerTargetFunction1"
-                }
+                Target(
+                    "PostCrawlerTarget",
+                    Arn= GetAtt("PostCrawlerFnForGlueJob", "Arn"),
+                    Id= "PostCrawlerTargetFunction1"
+                )
             ]
-
         ))
 
 
