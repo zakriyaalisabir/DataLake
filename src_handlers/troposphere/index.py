@@ -199,13 +199,13 @@ for bucket, dataType in BUCKETS:
                     ]
                 }
             },
-            Description="Foobar CloudWatch Event",
+            Description="Post Crawler Rule for CloudWatch Event",
             State="ENABLED",
             Targets=[
-                Join("", {
+                {
                     "Arn": GetAtt(Ref(PostCrawlerFnForGlueJob), "Arn"),
                     "Id": "PostCrawlerTargetFunction1"
-                })
+                }
             ]
 
         ))
