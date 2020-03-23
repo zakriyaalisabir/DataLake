@@ -128,7 +128,7 @@ for bucket, dataType in BUCKETS:
 
         T.add_resource(
             Crawler(
-                CRAWLER_NAME.upper(),
+                CRAWLER_NAME,
                 Name=CRAWLER_NAME,
                 Role=GetAtt("LambdaExecutionRole", "Arn"),
                 DatabaseName=CRAWLER_DB_NAME,
@@ -176,7 +176,7 @@ for bucket, dataType in BUCKETS:
             Function(
                 'PostCrawlerFnForGlueJob',
                 FunctionName='PostCrawlerFnForGlueJob'.lower(),
-                Handler='post_crawler.InitiateGlueJob',
+                Handler='index.initiateGlueJob',
                 Runtime='python3.7',
                 MemorySize=Ref(MemorySize),
                 Role=GetAtt("LambdaExecutionRole", "Arn"),

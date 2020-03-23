@@ -10,6 +10,7 @@ SERVER:=	django_server
 MODE:=	development
 VIRTUAL_ENV:=	venv
 MSG:=	updated code
+ORIGIN:=	master
 
 .PHONY:	init	clean
 
@@ -83,7 +84,7 @@ git_sync_dev:
 	git	fetch --all
 	git	add	.
 	git	commit	-m	"${MSG}"
-	git	push	origin	dev 
+	git	push	origin	${ORIGIN} 
 
 bootstrap:clean	init	virtualenv	install	config
 
