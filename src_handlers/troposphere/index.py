@@ -128,7 +128,7 @@ for bucket, dataType in BUCKETS:
 
         T.add_resource(
             Crawler(
-                CRAWLER_NAME,
+                CRAWLER_NAME.upper(),
                 Name=CRAWLER_NAME,
                 Role=GetAtt("LambdaExecutionRole", "Arn"),
                 DatabaseName=CRAWLER_DB_NAME,
