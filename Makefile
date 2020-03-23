@@ -10,7 +10,7 @@ SERVER:=	django_server
 MODE:=	development
 VIRTUAL_ENV:=	venv
 MSG:=	updated code
-ORIGIN:=	master
+ORIGIN:=	dev
 
 .PHONY:	init	clean
 
