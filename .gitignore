@@ -115,4 +115,18 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
+#ignore main env variables
 .env
+
+#ignore python virtual envirnment (venv)
+venv/
+
+#ignore cf_stack.yaml file
+cf_stack.yaml
+
+#ignore vscode settings
+.vscode/
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml

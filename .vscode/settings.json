@@ -1,4 +1,13 @@
 {
-  "python.linting.pylintEnabled": true,
-  "python.linting.enabled": true
+    "python.pythonPath": "venv/bin/python",
+    "python.autoComplete.addBrackets": true,
+    "python.linting.enabled": true,
+    "python.linting.pycodestyleEnabled": false,
+    "python.linting.pylintEnabled": true,
+    "python.linting.pylintArgs": [
+        "--errors-only",
+        "--load-plugins=pylint_django"
+    ],
+    "python.envFile": "${workspaceFolder}/.env",
+    "python.jediEnabled": false
 }

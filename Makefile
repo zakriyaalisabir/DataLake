@@ -2,16 +2,19 @@
 
 SHELL	:=	/bin/bash
 
-APP:=	datalake
+APP:=	datalake_rest_apis
+CF_STACK_NAME:=	cf-mock-datalake-stack
 REVISION:=$(shell	git	rev-parse	--short	HEAD)
 SCHEMA:=	${APP}
 SERVER:=	django_server
 MODE:=	development
 VIRTUAL_ENV:=	venv
+MSG:=	updated code
 
-.PHONY:	setup	clean_build	bootstrap
+.PHONY:	init	clean
 
 init:
+	mkdir	src_handlers/temp
 	cp	".env.sample"	".env"
 
 install:
@@ -24,7 +27,7 @@ clean:
 	rm	--force	--recursive	build/
 	rm	--force	--recursive	dist/
 	rm	--force	--recursive	*.egg-info
-	rm	--force	--recursive	src/temp/*
+	rm	--force	--recursive	src_handlers/temp/*
 
 virtualenv.create:
 	python3	-m	venv	$(VIRTUAL_ENV)
@@ -40,30 +43,48 @@ virtualenv.deactivate:
 virtualenv:virtualenv.create	virtualenv.activate
 
 cf.create_stack:
-	python3 src/index.py
+	python3 src_handlers/troposphere/index.py
 
 cf.push_stack:
-	aws cloudformation create-stack --stack-name learncf-subnet --template-body file://src/temp/cf_stack.yaml
+	aws	configure
+	aws cloudformation	create-stack	--stack-name	${CF_STACK_NAME}	--template-body	file://src_handlers/temp/cf_stack.yaml	--capabilities CAPABILITY_NAMED_IAM CAPABILITY_AUTO_EXPAND
+
+cf.update_stack:cf.create_stack
+	aws	configure
+	aws cloudformation	update-stack	--stack-name	${CF_STACK_NAME}	--template-body	file://src_handlers/temp/cf_stack.yaml	--capabilities CAPABILITY_NAMED_IAM CAPABILITY_AUTO_EXPAND
+
+cf.delete_stack:
+	aws	cloudformation	delete-stack	--stack-name	${CF_STACK_NAME}
 
 cf:cf.create_stack cf.push_stack
 
 migrate:
-	python	manage.py	migrate
+	python3	manage.py	makemigrations
+	python3	manage.py	migrate
 
 migrate.undo_all:
-	python	manage.py	migrate	${APP}	zero
+	python3	manage.py	migrate	${APP}	zero
 
 app.create:
-	python	manage.py	startapp	${APP}
+	python3	manage.py	startapp	${APP}
 
 server.create:
 	django-admin startproject ${SERVER} .
 
-server.run:migrate
-	python	manage.py	runserver
+server.run:
+	python3	manage.py	runserver
 
-run:server.run
+django.create.su:
+	python3 manage.py createsuperuser
 
-bootstrap:clean	init	virtualenv	install	config server.create app.create
+django:server.create app.create#only for creating a django server and django app for REST apis 
 
-all:bootstrap	run	#cf
+git_sync_dev:
+	git	fetch --all
+	git	add	.
+	git	commit	-m	"${MSG}"
+	git	push	origin	dev 
+
+bootstrap:clean	init	virtualenv	install	config
+
+all:bootstrap	server.run
