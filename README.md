@@ -7,7 +7,6 @@ Data Lake is an accelerated system based on optimised Amazon Web Services which 
 ```
 
 # Prerequisites
-## For Ubuntu Users
 
 If you wish to install Django using the Ubuntu repositories, the process is very straightforward.
 
@@ -40,8 +39,11 @@ Next, install Python Virtual Env:
 ```
 sudo apt install python3-venv
 ```
-
-Add aws_iam_secret_key, aws_iam_access_id & aws_region at the end of ".env.sample" file.
+Finally
+```
+1) Rename ".env.sample" file to ".env"
+2) Then updated values for "aws_iam_secret_key" & "aws_iam_access_id" at the end of ".env" file
+```
 
 # Usage
 
