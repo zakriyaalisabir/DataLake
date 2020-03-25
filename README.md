@@ -51,5 +51,7 @@ make all
 ```
 Then
 ```
-Make a post request on localhost:8080/ having a payload inside form-data with a key ="file" of type="file" and then browse and select file from these three file formats (csv,json,xml)
+Make a post request on localhost:8080/ 
+With a payload inside form-data with a key ="file" of type="file" &
+then browse and select file from these three file formats (csv,json,xml)
 ```
