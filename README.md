@@ -16,7 +16,7 @@ First, update your local package index with apt:
 sudo apt update
 ```
 
-Next, check which version of Python you have installed. 18.04 ships with Python 3.6 by default, which you can verify by typing:
+Next, check which version of Python you have installed. 18.04 ships with Python 3.6 by default, which you can verify by typing if you get an error then add your python3 path to system path variable:
 
 ```
 python3 - V
@@ -25,19 +25,19 @@ python3 - V
 Next, install Django:
 
 ```
-sudo apt install python3 - django
+sudo apt install python3-django
 ```
 
 You can test that the installation was successful by typing:
 
 ```
-django - admin - -version
+django-admin --version
 ```
 
 Next, install Python Virtual Env:
 
 ```
-sudo apt install python3 - venv
+sudo apt install python3-venv
 ```
 
 Add aws_iam_secret_key, aws_iam_access_id & aws_region at the end of ".env.sample" file.
