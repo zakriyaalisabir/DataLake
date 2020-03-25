@@ -87,6 +87,6 @@ git_sync_dev:
 	git	commit	-m	"${MSG}"
 	git	push	origin	${ORIGIN} 
 
-bootstrap:clean	init	virtualenv	install	config
+bootstrap:init	virtualenv	install	config
 
 all:bootstrap	server.run
