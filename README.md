@@ -7,6 +7,7 @@ Data Lake is an accelerated system based on optimised Amazon Web Services which 
 ```
 
 # Prerequisites
+## For Ubuntu Users
 
 If you wish to install Django using the Ubuntu repositories, the process is very straightforward.
 
