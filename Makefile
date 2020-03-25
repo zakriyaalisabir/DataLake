@@ -10,7 +10,7 @@ SERVER:=	django_server
 MODE:=	development
 VIRTUAL_ENV:=	venv
 MSG:=	updated code
-ORIGIN:=	dev
+ORIGIN:=	master
 
 .PHONY:	init	clean
 
@@ -67,7 +67,7 @@ django.create.su:
 
 django:server.create app.create#only for creating a django server and django app for REST apis 
 
-git_sync_dev:
+git_sync:
 	git	fetch --all
 	git	pull	origin ${ORIGIN}
 	git	add	.
