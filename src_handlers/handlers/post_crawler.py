@@ -12,15 +12,15 @@ session = boto3.session.Session(
 glue_client = boto3.client('glue', region_name=os.getenv('aws_region'))
 
 
-def InitiateGlueJob(event, context):
-    # TODO : Start Glue Job below
+def initiateGlueJob(event, context):
+    # TODO : Start Glue Job below 
     try:
         if event and 'detail' in event and event['detail'] and 'crawlerName' in event['detail']:
             c_name = event['detail']['crawlerName']
             print('Received crawler_name from event -{0}'.format(str(c_name)))
 
             crawler = glue_client.get_crawler(Name=c_name)
-            print('Received crawler from glue - {0}'.format(str(crawler)))
+            print('Received crawlerObj from glue')
 
             database = crawler['Crawler']['DatabaseName']
             print('Received db from crawler - {0}'.format(str(database)))
