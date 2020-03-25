@@ -1,16 +1,17 @@
 #	Make	targets	for	Mock	DataLake	Project
 
-SHELL	:=	/bin/bash
+SHELL:=	/bin/bash
 
 APP:=	datalake_rest_apis
 CF_STACK_NAME:=	cf-mock-datalake-stack
-REVISION:=$(shell	git	rev-parse	--short	HEAD)
+REVISION:=	$(shell	git	rev-parse	--short	HEAD)
 SCHEMA:=	${APP}
 SERVER:=	django_server
 MODE:=	development
 VIRTUAL_ENV:=	venv
-MSG:=	updated code
 ORIGIN:=	master
+TIMESTAMP := $(shell /bin/date "+%Y/%m/%d %H-%M-%S")
+MSG:=	updated code @ ${TIMESTAMP}
 
 .PHONY:	init	clean
 
