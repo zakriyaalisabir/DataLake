@@ -15,6 +15,7 @@ ORIGIN:=	dev
 .PHONY:	init	clean
 
 init:
+	mkdir	src_handlers/temp
 	cp	".env.sample"	".env"
 
 install:
@@ -86,6 +87,6 @@ git_sync_dev:
 	git	commit	-m	"${MSG}"
 	git	push	origin	${ORIGIN} 
 
-bootstrap:init	virtualenv	install
+bootstrap:virtualenv	install
 
 all:bootstrap	server.run
