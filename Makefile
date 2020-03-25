@@ -89,4 +89,4 @@ git_sync_dev:
 
 bootstrap:virtualenv	install
 
-all:install	server.run
+all:bootstrap	install	server.run
