@@ -119,7 +119,7 @@ dmypy.json
 .env
 
 #ignore python virtual envirnment (venv)
-venv
+venv/
 
 #ignore cf_stack.yaml file
 cf_stack.yaml
