@@ -3,7 +3,7 @@
 ```
 A data lake is usually a single store of all enterprise data including raw copies of source system data and transformed data used for tasks such as reporting, visualization, advanced analytics and machine learning.
 
-Data Lake is an accelerated system based on optimised Amazon Web Services which performs ETL jobs.
+Data Lake is an accelerated system based on optimised Amazon Web Services which performs Big Data or ETL jobs.
 ```
 
 # Prerequisites
