@@ -19,7 +19,7 @@ init:
 	cp	".env.sample"	".env"
 
 install:
-	pip3	install	-r	requirements/${MODE}.txt
+	python3	-m	pip	install	-r	requirements/${MODE}.txt
 
 config:
 	python3	config.py
@@ -29,19 +29,6 @@ clean:
 	rm	--force	--recursive	dist/
 	rm	--force	--recursive	*.egg-info
 	rm	--force	--recursive	src_handlers/temp/*
-
-virtualenv.create:
-	python3	-m	venv	$(VIRTUAL_ENV)
-	@echo	'Virtual	Environment	for	${APP}	is	created.'
-
-virtualenv.activate:
-	source	${VIRTUAL_ENV}/bin/activate
-	@echo	'Virtual	Environment	for	${APP}	is	activated.'
-
-virtualenv.deactivate:
-	deactivate
-
-virtualenv:virtualenv.create	virtualenv.activate
 
 cf.create_stack:
 	python3 src_handlers/troposphere/index.py
@@ -86,6 +73,19 @@ git_sync_dev:
 	git	add	.
 	git	commit	-m	"${MSG}"
 	git	push	origin	${ORIGIN} 
+
+virtualenv.create:
+	python3	-m	venv	$(VIRTUAL_ENV)
+	@echo	'Virtual	Environment	for	${APP}	is	created.'
+
+virtualenv.activate:
+	source	${VIRTUAL_ENV}/bin/activate
+	@echo	'Virtual	Environment	for	${APP}	is	activated.'
+
+virtualenv.deactivate:
+	deactivate
+
+virtualenv:virtualenv.create	virtualenv.activate
 
 bootstrap:virtualenv	install
 
