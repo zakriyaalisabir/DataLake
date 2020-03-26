@@ -1,9 +1,0 @@
-option_settings:
-    aws:elasticbeanstalk:application:environment:
-        DJANGO_SETTINGS_MODULE: "django_server.settings"
-        PYTHONPATH: "/opt/python/current/app/django_server:$PYTHONPATH"
-        ALLOWED_HOSTS: "datalake-django-env.eba-gxezcx3u.ap-southeast-1.elasticbeanstalk.com"
-    aws:elasticbeanstalk:container:python:
-        WSGIPath: ./django_server/wsgi.py
-        NumProcesses: 1
-        NumThreads: 15
