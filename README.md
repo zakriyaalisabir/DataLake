@@ -49,7 +49,11 @@ Finally
 
 Use the make tool to enable and setup DLA environment.
 
-```bash
+```
+make cf //one time only
+```
+
+```
 make all
 ```
 Then
