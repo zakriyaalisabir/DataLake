@@ -100,9 +100,9 @@ for bucket, dataType in BUCKETS:
     S3_BUCKET = T.add_resource(Bucket(
         bucket+BUCKET_NAME_SUFFIX,
         BucketName=s3_bucket_name(str(bucket+BUCKET_NAME_SUFFIX).lower()),
+        AccessControl=PublicReadWrite,
         CorsConfiguration=BUCKET_CORS_CONFIG,
         VersioningConfiguration=BUCKET_VERSIONING_CONFIG,
-        AccessControl=PublicReadWrite,
         # Uncomment below line to add accelerated write
         # AccelerateConfiguration=BUCKET_ACCELERATION_CONFIG
     ))

@@ -60,8 +60,5 @@ class DatalakeViews(APIView):
             Key=fType+'/file'+'.'+fType,
             Body=file_obj)
 
-        # rawdata = RawDataFile(title=fName, file_type=fType)
-        # rawdata.save()
-
         return Response({"result": data},
                         status=status.HTTP_200_OK)
